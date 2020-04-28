@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+<style>
+li{
+    list-style: none
+}
+.page-bar a{
+    border: 1px solid #ddd;
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    color: #337ab7;
+    cursor: pointer
+}
+.page-bar a:hover{
+    background-color: #eee;
+}
+.page-bar .active a{
+    color: #fff;
+    background-color: #337ab7;
+    cursor: default;
+}
+.page-bar i{
+    font-style:normal;
+    color: #e30742;
+}
+</style>
+</head>
+<body>
+ <div class="page-bar">
+     <table>
+         <tr v-for='list in curList'>
+             <td>{{list.id}}</td>
+             <td>{{list.name}}</td>
+         </tr>
+     </table>
+    <ul>
+        <!--如果目前是第一页则“上一页”不可用，反之可用-->
+        <li v-if="curPage > 1"><a @click="curPage--">上一页</a></li>
+        <li v-if="curPage == 1"><a style="cursor:not-allowed;">上一页</a></li>
+        <!--当前页背景色为蓝色-->
+        <li v-for="index in indexs"  :class="{ 'active': curPage == index}">
+            <a @click="btnClick(index)">{{ index }}</a>
+        </li>
+        <!--如果目前是最后一页则“下一页”不可用，反之可用-->
+        <li v-if="curPage < allPageNum"><a @click="curPage++">下一页</a></li>
+        <li v-if="curPage == allPageNum"><a style="cursor:not-allowed;">下一页</a></li>
+        <li><a>共<i>{{allPageNum}}</i>页</a></li>
+    </ul>
+	<label style="float: left;margin-left: 20px">每行显示</label><input type="text" style="width: 50px;" :value="num" v-model="num"/>
+</div>
+<script type="text/javascript">
+new Vue({
+    el: '.page-bar',
+    data: {
+        curPage: 1,//当前页码
+        num: 1,//每页展示数量
+        lists:[{"id":1,"name":"a"},{"id":2,"name":"b"},{"id":3,"name":"c"},{"id":4,"name":"d"}],//即将要展示的内容
+        allPageNum: 1, //总页数
+        curList:[]//当前页面展示list
+    },
+
+    watch: {
+        curPage: function(newValue){
+            this.pageInfo(newValue,this.num);
+        },
+		num: function (newValue) {
+            this.allPageNum = Math.ceil(this.lists.length / newValue);
+            this.pageInfo(this.cur,newValue);
+        }
+    },
+    //初始化总页数和第一页
+    created() {
+      this.init();
+      this.pageInfo(1,this.num);
+    },
+     methods: {
+        init: function(){
+            this.allPageNum = Math.ceil(this.lists.length / this.num);
+        },
+        btnClick: function(data){
+            if(data != this.curPage){
+                this.curPage = data;
+            }
+        },
+		pageInfo:function (start,num) {
+			var start = (start - 1) * num;
+			this.curList = this.lists.slice(start,parseInt(start) + parseInt(num));
+		}
+    },
+    computed: {
+        indexs: function(){
+          var left = 1;
+          var right = this.allPageNum;
+          var ar = [];
+          if(this.allPageNum>= 5){
+          	//这里最大范围从3到6，如果到达7，那么下边加2变成9，已经超过最大的范围值
+            if(this.cur > 3 && this.cur < this.allPageNum-1){
+            	//以4为参考基准，左面加2右边加2
+                    left = this.cur - 2
+                    right = this.cur + 2
+            }else{
+                if(this.cur<=3){
+                    left = 1
+                    right = 5
+                }else{
+                    right = this.allPageNum
+                    left = this.allPageNum -4
+                }
+            }
+         }
+        while (left <= right){
+            ar.push(left)
+            left ++
+        }
+        return ar
+       }
+    }
+})
+</script>
+</body>
+</html>
+
+
+
+

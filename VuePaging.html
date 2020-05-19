@@ -111,12 +111,12 @@ new Vue({
           var ar = [];
           if(this.allPageNum>= 5){
           	//这里最大范围从3到6，如果到达7，那么下边加2变成9，已经超过最大的范围值
-            if(this.cur > 3 && this.cur < this.allPageNum-1){
+            if(this.curPage > 3 && this.curPage < this.allPageNum-1){
             	//以4为参考基准，左面加2右边加2
-                    left = this.cur - 2
-                    right = this.cur + 2
+                    left = this.curPage - 2
+                    right = this.curPage + 2
             }else{
-                if(this.cur<=3){
+                if(this.curPage<=3){
                     left = 1
                     right = 5
                 }else{
